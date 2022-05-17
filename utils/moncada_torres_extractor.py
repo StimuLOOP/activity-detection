@@ -1,9 +1,38 @@
 from scipy.stats import skew, kurtosis, iqr
 from scipy import signal
 from scipy.fft import fft
-from utils.helper import *
-from utils.dataset import *
 from scipy import ndimage
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
+import numpy as np
+
+def sliding_window(fn, measurements, s_positions, filter_func=[]):
+    '''
+    Slice timeseries into fixed size windows
+    '''
+    # Assemble dataset of the form (num_samples, num_measurements, w_size)
+    w_size = 128
+    df = pd.read_csv(fn)
+    proc_data = {}
+    for pos in s_positions:
+        proc_data[pos] = {}
+        for i,measurement in enumerate(measurements):
+            # Get measurement of position
+            cols = []
+            if measurement == 'press':
+                cols = f'{pos}__{measurement}'
+                data = df[cols].to_numpy().reshape(1,-1)
+            else:
+                cols = [f'{pos}__{measurement}_x',f'{pos}__{measurement}_y',f'{pos}__{measurement}_z']
+                data = df[cols].to_numpy().T
+            
+            # Split array into fixed size windows
+            num_windows = data.shape[1]//w_size
+            pruned_data = data[:, :w_size*num_windows]
+            split_data = np.array(np.split(pruned_data,num_windows, axis=1))
+            
+            proc_data[pos][measurement] = meas = filter_func[i](split_data)
+    return proc_data
 
 def moncada_torres_active_filter(sig):
     median_sig = moncada_torres_median_filter(sig)
@@ -220,31 +249,23 @@ def extract_press_features(data):
     return np.concatenate(feat,axis=-1)
     
 
-def moncada_torres_patient_dataset(patient, s_positions, label_name='activity', w_size=128, w_overlap=64, data_root='/datasets/GaitDetection'):
+def moncada_torres_patient_dataset(fn, s_positions, w_size=128):
     '''
     Get data, sequence timeseries into windows and extract features from measurements
     '''
-    assert label_name in ['activity', 'arm_affected', 'arm_nonaffected'], f"Label name must be one of ['activity', 'arm_affected', 'arm_nonaffected'], not {label_name}"
     # Get data
-    data_posture, _ = sliding_window(
-        patient, 
+    data_posture = sliding_window(
+        fn, 
         ['acc'], 
         s_positions, 
-        label_name = label_name,
-        filter_func = [moncada_torres_pos_filter],
-        w_size=w_size, 
-        w_overlap=w_overlap, 
-        data_root=data_root
+        filter_func = [moncada_torres_pos_filter]
     )
-    data, labels = sliding_window(
-        patient, 
+    data = sliding_window(
+        fn, 
         ['acc','gyro', 'press'], 
         s_positions, 
-        label_name = label_name,
-        filter_func = [moncada_torres_active_filter, moncada_torres_low_pass_filter, moncada_torres_butter_filter],
-        w_size=w_size, 
-        w_overlap=w_overlap, 
-        data_root=data_root)
+        filter_func = [moncada_torres_active_filter, moncada_torres_low_pass_filter, moncada_torres_butter_filter]
+    )
     
     # Get numpy array for each sensor type
     acc_posture, acc_activity, gyro, press = [], [], [], []
@@ -270,4 +291,4 @@ def moncada_torres_patient_dataset(patient, s_positions, label_name='activity', 
     # Normalize each feature of this patient
     feat = StandardScaler().fit_transform(feat)
     
-    return feat, labels
+    return feat
