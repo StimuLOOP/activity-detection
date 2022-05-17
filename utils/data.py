@@ -6,7 +6,9 @@ def get_data(
     sensors='all'
     ):
     # Assemble sensor positions
-    if sensors == 'left':
+    if sensors in ['wrist_l', 'wrist_r']:
+        s_positions = [sensors]
+    elif sensors == 'left':
         s_positions = ['wrist_l', 'ankle_l']
     elif sensors == 'right':
         s_positions = ['wrist_r', 'ankle_r']
