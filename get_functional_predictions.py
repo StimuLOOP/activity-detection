@@ -17,6 +17,9 @@ def get_parser():
     # Sensor positions
     parser.add_argument('-s', '--sensors', default='all', type=str, choices= VALID_SENSOR_POS_FUNCTIONAL, help='Specify sensor positions to use')
     
+    # Affected flag
+    parser.add_argument('-a', '--affected', action='store_true', help='Set this flag if wrist is affected')
+    
     # Output location
     parser.add_argument('-o', '--output_location', type=str, help='Specify output location.')
     
@@ -35,9 +38,12 @@ def main(fn, s_setup, out_loc):
     # Get predictions
     predictions = {}
     task = 'functional'
-    for setup in ['affected_wrist', 'not_affected_wrist']:
-        model_fn = os.path.join('models', task, f'{setup}.joblib')
-        predictions[f'{task}__{setup}'] = make_predictions(model_fn, data, task)
+    if args.affected:
+        setup = 'affected_wrist'
+    else:
+        setup = 'not_affected_wrist'
+    model_fn = os.path.join('models', task, f'{setup}.joblib')
+    predictions[f'{task}_predictions'] = make_predictions(model_fn, data, task)
             
     # Get output location
     out_fn = fn.split('/')[-1].split('.')[-2]
@@ -47,7 +53,7 @@ def main(fn, s_setup, out_loc):
         
     # Save predictions
     df = pd.DataFrame.from_dict(predictions)
-    df.to_csv(os.path.join(out_loc, out_fn),index=False)
+    df.to_csv(os.path.join(out_loc, out_fn),index_label='frame_number')
     
 
 if __name__ == '__main__':
