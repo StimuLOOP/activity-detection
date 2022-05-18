@@ -15,7 +15,7 @@ def get_parser():
     parser.add_argument('file_path', type=str, help='CSV file to make predictions.')
     
     # Sensor positions
-    parser.add_argument('-s', '--sensors', default='all', type=str, choices= VALID_SENSOR_POS_FUNCTIONAL, help='Specify sensor positions to use')
+    parser.add_argument('-s', '--sensors', default='wrist_r', type=str, choices= VALID_SENSOR_POS_FUNCTIONAL, help='Specify sensor positions to use')
     
     # Affected flag
     parser.add_argument('-a', '--affected', action='store_true', help='Set this flag if wrist is affected')
@@ -53,6 +53,7 @@ def main(fn, s_setup, out_loc):
         
     # Save predictions
     df = pd.DataFrame.from_dict(predictions)
+    Path(out_loc).mkdir(exist_ok=True, parents=True)
     df.to_csv(os.path.join(out_loc, out_fn),index_label='frame_number')
     
 
