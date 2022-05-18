@@ -9,7 +9,7 @@ To use the provided code, please install the requirements given in ```requiremen
 ```
 pip install -r requirements.txt
 ```
-To prevent dependency issues, we recommend installating the packages in a conda or venv environment.
+To prevent dependency issues, we recommend installing the packages in a conda or venv environment.
 
 ## Data Format
 To use our models, make sure to format the data accordingly in csv format. 
@@ -28,7 +28,7 @@ Additionally, each sensor measurement must include the following measurements:
 * Accelerometer in x,y and z direction (```acc_<x,y or z>```)
 
 The CSV must then have columns in the format ```<sensor_pos>___<measurement>```.
-Examples of how to format the data are given in ```examples/```.
+Examples of how to format the data are given in ```examples/data.csv``` and ```examples/data_wrists.csv``` with only a subset of sensor locations.
 Example code to export data collected by the Zurich Move sensor in matlab to csv can be found in ```MatlabToCSV.ipynb```.
 
 
@@ -48,7 +48,7 @@ Some examples of how to use them are:
 python get_gait_predictions.py example/data.csv
 python get_activity_predictions.py -s wrists example/data.csv 
 python get_gait_predictions.py -s left -a example/data.csv 
-python get_activity_predictions.py -s ankles -o example/ankle_gait_preds.csv example/data.csv 
+python get_activity_predictions.py -s ankles -o example/ example/data.csv 
 ```
 
 
@@ -69,5 +69,5 @@ Some examples of how to use them are:
 python get_functional_predictions.py example/data.csv
 python get_functional_predictions.py -s wrist_r example/data.csv 
 python get_functional_predictions.py -s wrist_r -a example/data.csv 
-python get_functional_predictions.py -s wrist_l -a -o example/affected_wrist_predictions.csv example/data.csv 
+python get_functional_predictions.py -s wrist_l -a -o example/ example/data.csv 
 ```
