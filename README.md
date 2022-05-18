@@ -48,7 +48,7 @@ Some examples of how to use them are:
 python get_gait_predictions.py example/data.csv
 python get_activity_predictions.py -s wrists example/data.csv 
 python get_gait_predictions.py -s left -a example/data.csv 
-python get_activity_predictions.py -s ankles -o example/ example/data.csv 
+python get_activity_predictions.py -s ankles -o example/ankle_activity_predictions/ example/data.csv 
 ```
 
 
@@ -69,5 +69,5 @@ Some examples of how to use them are:
 python get_functional_predictions.py example/data.csv
 python get_functional_predictions.py -s wrist_r example/data.csv 
 python get_functional_predictions.py -s wrist_r -a example/data.csv 
-python get_functional_predictions.py -s wrist_l -a -o example/ example/data.csv 
+python get_functional_predictions.py -s wrist_l -a -o example/left_affected_functional_prediction/ example/data.csv 
 ```
