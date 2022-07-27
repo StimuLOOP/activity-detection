@@ -3,7 +3,8 @@ from utils.moncada_torres_extractor import *
 
 def get_data(
     fn,
-    sensors='all'
+    sensors='all',
+    w_size=128
     ):
     # Assemble sensor positions
     if sensors in ['wrist_l', 'wrist_r']:
@@ -22,11 +23,11 @@ def get_data(
         s_positions = ['wrist_r', 'wrist_l', 'ankle_r', 'ankle_l']
     else:
         raise ValueError(f"Invalid sensors '{sensors}', should be one of {VALID_SENSOR_POS}")
-    
-    # Get data from feature extractor  
+
+    # Get data from feature extractor
     data = moncada_torres_patient_dataset(
-            fn, 
-            s_positions
+            fn,
+            s_positions,
+            w_size=w_size
         )
     return data
-    
