@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import os
 from pathlib import Path
+from utils.utils import *
 
 def get_parser():
     # Parse input arguments
@@ -50,7 +51,7 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
 
     if not append:
         # Get output location
-        out_fn = fn.split('/')[-1].split('.')[-2]
+        out_fn = path_leaf(fn).split('.')[-2]
         out_fn = f'{out_fn}_functional_predictions.csv'
         if out_loc is None:
             out_loc = Path(fn).parent.absolute()

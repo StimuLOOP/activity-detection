@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import os
 from pathlib import Path
+from utils.utils import *
 
 def get_parser():
     # Parse input arguments
@@ -44,7 +45,6 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
     if s_setup not in ['right', 'left']:
         model_fn = os.path.join('models', task, f'{s_setup}.joblib')
         predictions[f'{task}_prediction'] = make_predictions(model_fn, data, task)
-        print(predictions[f'{task}_prediction'].shape)
     else:
         # For unilateral setup, use not_affected by default and affected if configured by user
         if affected:
@@ -56,7 +56,7 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
 
     if not append:
         # Get output location
-        out_fn = fn.split('/')[-1].split('.')[-2]
+        out_fn = path_leaf(fn).split('.')[-2]
         out_fn = f'{out_fn}_gait_predictions.csv'
         if out_loc is None:
             out_loc = Path(fn).parent.absolute()
