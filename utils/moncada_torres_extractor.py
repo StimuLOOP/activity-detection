@@ -174,7 +174,7 @@ def extract_activity_features(data):
     feat.append(spectral_energy)
 
     # Compute spectral kurtosis
-    feat.append(np.abs(kurtosis(freq_data, axis=-1))-3)
+    feat.append(kurtosis(np.abs(freq_data), axis=-1)-3)
 
     return np.concatenate(feat,axis=-1)
 
