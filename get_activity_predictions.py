@@ -70,6 +70,7 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
         df = pd.read_csv(fn)
         df = pd.concat((df, pd.DataFrame.from_dict(predictions)),axis=1)
         df.to_csv(fn, index=False)
+    print(f"Finished computing activity detections for {fn}.")
 
 
 if __name__ == '__main__':
