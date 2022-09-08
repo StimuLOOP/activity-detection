@@ -4,7 +4,7 @@ from get_functional_predictions import main as functional_predictions
 import os, sys
 
 if __name__ == '__main__':
-    file_loc = sys.argv[-1]
+    file_loc = os.path.abspath(sys.argv[-1])
     for folder in ['wrists','all', 'affected', 'nonaffected', 'no_chest']:
         for fn in os.listdir(os.path.join(file_loc,folder)):
             # Compute file path
