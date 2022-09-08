@@ -6,7 +6,7 @@ import os, sys
 if __name__ == '__main__':
     file_loc = sys.argv[-1]
     for folder in ['wrists','all', 'affected', 'nonaffected', 'no_chest']:
-        for fn in os.listdir(folder):
+        for fn in os.listdir(os.path.join(file_loc,folder)):
             # Compute file path
             file_path = os.path.join(file_loc,folder,fn)
             setup = folder
