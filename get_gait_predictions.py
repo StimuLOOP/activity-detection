@@ -67,7 +67,13 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
         df.to_csv(os.path.join(out_loc, out_fn),index_label='frame_number')
     else:
         # Save predictions
-        df = pd.read_csv(fn)
+        try:
+            df = pd.read_csv(fn)
+        except pd.errors.ParserError as e:
+            log_fp = open('log.txt', 'a')
+            log(log_fp,f"{fn} contains bad lines, those lines will be skipped and deleted.")
+            log_fp.close()
+            df = pd.read_csv(fn,on_bad_lines='skip')
         df = pd.concat((df, pd.DataFrame.from_dict(predictions)),axis=1)
         df.to_csv(fn, index=False)
     print(f"Finished computing functional predictions for {fn}.")

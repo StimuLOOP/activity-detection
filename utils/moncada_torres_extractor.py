@@ -11,7 +11,7 @@ def sliding_window(fn, measurements, s_positions, filter_func=[], w_size = 128):
     Slice timeseries into fixed size windows
     '''
     # Assemble dataset of the form (num_samples, num_measurements, w_size)
-    df = pd.read_csv(fn)
+    df = pd.read_csv(fn,on_bad_lines='skip')
     proc_data = {}
     for pos in s_positions:
         proc_data[pos] = {}
