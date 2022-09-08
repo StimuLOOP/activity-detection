@@ -1,14 +1,14 @@
 from get_activity_predictions import main as activity_predictions
 from get_gait_predictions import main as gait_predictions
 from get_functional_predictions import main as functional_predictions
-import os
+import os, sys
 
 if __name__ == '__main__':
-
+    file_loc = sys.argv[-1]
     for folder in ['wrists','all', 'affected', 'nonaffected', 'no_chest']:
         for fn in os.listdir(folder):
             # Compute file path
-            file_path = os.path.join(folder,fn)
+            file_path = os.path.join(file_loc,folder,fn)
             setup = folder
             affected = False
             if 'affected' == folder:
