@@ -47,7 +47,7 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
     else:
         setup = 'not_affected_wrist'
     model_fn = os.path.join('models', task, f'{setup}.joblib')
-    predictions[f'{task}_predictions'] = make_predictions(model_fn, data, task)
+    predictions[f'{task}_{"non" if not affected else ""}affected_predictions'] = make_predictions(model_fn, data, task)
 
     if not append:
         # Get output location

@@ -5,7 +5,6 @@ from utils.utils import *
 import os, sys, datetime
 
 if __name__ == '__main__':
-    log_fp = open('log.txt', 'a')
     file_loc = os.path.abspath(sys.argv[-1])
     for folder in ["wrists","all", "affected", "nonaffected", "no_chest"]:
         for fn in os.listdir(os.path.join(file_loc,folder)):
@@ -13,20 +12,32 @@ if __name__ == '__main__':
             file_path = os.path.join(file_loc,folder,fn)
             setup = folder
             affected = False
+            aff_side = fn.split('_')[-2]
             if 'affected' == folder:
                 affected = True
-                setup = fn.split('_')[-2]
+                setup = aff_side
             elif 'nonaffected' == folder:
-                setup = fn.split('_')[-2]
+                if aff_side =='left':
+                    setup='right'
+                else:
+                    setup='left'
             # Compute activity
-            log(log_fp, f"Starting predictions for {file_path}")
+            log(f"Starting predictions for {file_path}")
             activity_predictions(file_path, setup, out_loc=None, affected=affected, append=True)
-            log(log_fp, f"Finished activity predictions for {file_path}")
+            log(f"Finished activity predictions for {file_path}")
             # Compute gait
             gait_predictions(file_path, setup, out_loc=None, affected=affected, append=True)
-            log(log_fp, f"Finished gait predictions for {file_path}")
+            log(f"Finished gait predictions for {file_path}")
 
             # Compute functional
-            functional_predictions(file_path, setup, out_loc=None, affected=affected, append=True)
-            log(log_fp, f"Finished functional predictions for {file_path}")
-    log_fp.close()
+            try:
+                sensor = 'wrist_r' if aff_side == 'right' else 'wrist_l'
+                functional_predictions(file_path, sensor, out_loc=None, affected=True, append=True)
+            except KeyError as e:
+                log(f'Cannot compute functional prediction for affected side, {sensor} not in {fn}')
+            try:
+                sensor = 'wrist_l' if aff_side == 'right' else 'wrist_r'
+                functional_predictions(file_path, sensor, out_loc=None, affected=False, append=True)
+            except KeyError as e:
+                log(f'Cannot compute functional prediction for nonaffected side, {sensor} not in {fn}')
+            log(f"Finished functional predictions for {file_path}")
