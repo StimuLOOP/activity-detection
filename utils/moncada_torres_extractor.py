@@ -12,6 +12,7 @@ def sliding_window(fn, measurements, s_positions, filter_func=[], w_size = 128):
     '''
     # Assemble dataset of the form (num_samples, num_measurements, w_size)
     df = pd.read_csv(fn,on_bad_lines='skip')
+    assert (df.isnull().values.any()), f"{fn} contains invalid values."
     proc_data = {}
     for pos in s_positions:
         proc_data[pos] = {}
