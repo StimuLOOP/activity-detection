@@ -19,14 +19,14 @@ if __name__ == '__main__':
             elif 'nonaffected' == folder:
                 setup = fn.split('_')[-2]
             # Compute activity
-            log(fp, f"Starting predictions for {file_path}")
+            log(log_fp, f"Starting predictions for {file_path}")
             activity_predictions(file_path, setup, out_loc=None, affected=affected, append=True)
-            log(fp, f"Finished activity predictions for {file_path}")
+            log(log_fp, f"Finished activity predictions for {file_path}")
             # Compute gait
             gait_predictions(file_path, setup, out_loc=None, affected=affected, append=True)
-            log(fp, f"Finished gait predictions for {file_path}")
+            log(log_fp, f"Finished gait predictions for {file_path}")
 
             # Compute functional
             functional_predictions(file_path, setup, out_loc=None, affected=affected, append=True)
-            log(fp, f"Finished functional predictions for {file_path}")
+            log(log_fp, f"Finished functional predictions for {file_path}")
     log_fp.close()
