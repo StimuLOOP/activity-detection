@@ -70,12 +70,12 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
         try:
             df = pd.read_csv(fn)
         except pd.errors.ParserError as e:
-            log_fp = open('log.txt', 'a')
-            log(log_fp,f"{fn} contains bad lines, those lines will be skipped and deleted.")
-            log_fp.close()
+            with open('log.txt', 'a') as log_fp:
+                log(log_fp,f"{fn} contains bad lines, those lines will be skipped and deleted.")
             df = pd.read_csv(fn,on_bad_lines='skip')
         if df.isnull().values.any():
-            log(log_fp, f"{fn} contains invalid values on lines {np.argwhere(df.isnull().values)[:,0]}.")
+            with open('log.txt', 'a') as log_fp:
+                log(log_fp, f"{fn} contains invalid values on lines {np.argwhere(df.isnull().values)[:,0]}.")
         df = df.dropna()
         df = pd.concat((df, pd.DataFrame.from_dict(predictions)),axis=1)
         df.to_csv(fn, index=False)
