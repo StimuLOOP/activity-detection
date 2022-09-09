@@ -7,4 +7,4 @@ def path_leaf(path):
 
 def log(fp, msg):
     timestamp =  datetime.datetime.now()
-    fp.write(f"[{str(timestamp)}] {msg}")
+    fp.write(f"[{str(timestamp)}] {msg}\n")

@@ -69,6 +69,9 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
             log(log_fp,f"{fn} contains bad lines, those lines will be skipped and deleted.")
             log_fp.close()
             df = pd.read_csv(fn,on_bad_lines='skip')
+        if df.isnull().values.any():
+            log(log_fp, f"{fn} contains invalid values on lines {np.argwhere(df.isnull().values)[:,0]}.")
+        df = df.dropna()
         df = pd.concat((df, pd.DataFrame.from_dict(predictions)),axis=1)
         df.to_csv(fn, index=False)
     print(f"Finished computing gait detections for {fn}.")
