@@ -24,7 +24,7 @@ def main(path_to_files, return_dfs=False):
     # TODO JOHANNES: 
     # Name of the files to save to
     ################################################################
-    FILE_NAME = '<prediction condition>'
+    FILE_NAME = 'outcomes_xyz'
     
     ################################################################
     # TODO JOHANNES:
@@ -161,10 +161,14 @@ def main(path_to_files, return_dfs=False):
     cat_df = pd.concat([df[avg_cols] for df in final_dfs.values()])
     agg_df = cat_df.groupby(cat_df.index).mean()
     final_dfs['average'] = pd.concat((final_dfs['T1'][['Pat_id','measurements', 'setup', 'affected_side']], agg_df), axis=1)
-        
-    # Save final dataframes to csvs
+    
+    # Open excel writer
+    writer = pd.ExcelWriter(os.path.join(path_to_files,f'{FILE_NAME}.xlsx'), engine='xlsxwriter')
+
+    # Write each dataframe to a different worksheet.
     for name, df in final_dfs.items():
-        df.to_csv(os.path.join(path_to_files,f"{name}.csv"))
+        df.to_excel(writer, sheet_name=name)
+    writer.save()
     
     if return_dfs:
         return final_dfs
