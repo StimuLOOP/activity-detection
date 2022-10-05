@@ -4,6 +4,7 @@ from utils.activity_counts import *
 from argparse import ArgumentParser
 import numpy as np
 from pathlib import Path
+from tqdm.auto import tqdm
 
 def get_parser():
     # Parse input arguments
@@ -18,7 +19,7 @@ def get_parser():
 def main(path_to_files):
 
     # Iterate through all patients
-    for p_id in range(1000):
+    for p_id in tqdm(range(1000)):
         if p_id <10:
             p_id = f'00{p_id}'
         elif p_id <100:
@@ -40,6 +41,9 @@ def main(path_to_files):
                         if not os.path.exists(f"{fn}.csv"):
                             continue
                         df = pd.read_csv(f"{fn}.csv")
+                        # Skip if shorter than 22 hours
+                        if len(df) <= 22*60*60*50:
+                            continue
                         res_df = {}
                         for column in ['activity_prediction', 'gait_prediction', 'functional_affected_predictions','functional_nonaffected_predictions']:
                             res_df[column] = agg_labels(df[column])
