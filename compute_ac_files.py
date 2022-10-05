@@ -35,11 +35,11 @@ def main(path_to_files):
                 # Iterate across setups
                 for setup in ["wrists","all", "no_chest"]:
                     for aff_side, nonaff_side in [['left', 'right'],['right', 'left']]:
-                        fn = f"{p_id}_{m_id}_{t_id}_{setup}_sensors_{aff_side}_aff.csv"
+                        fn = f"{p_id}_{m_id}_{t_id}_{setup}_sensors_{aff_side}_aff"
                         fn = os.path.join(path_to_files, fn)
-                        if not os.path.exists(fn):
+                        if not os.path.exists(f"{fn}.csv"):
                             continue
-                        df = pd.read_csv(fn)
+                        df = pd.read_csv(f"{fn}.csv")
                         res_df = {}
                         for column in ['activity_prediction', 'gait_prediction', 'functional_affected_predictions','functional_nonaffected_predictions']:
                             res_df[column] = agg_labels(df[column])
