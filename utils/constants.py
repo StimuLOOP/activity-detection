@@ -32,8 +32,8 @@ PRED_TO_STRING = {
         4:'stairs',
     },
     'gait':{
-        0:'gait',
-        1:'no-gait',
+        0:'no-gait',
+        1:'gait',
     },
     'functional':{
         0: 'non-functional',
