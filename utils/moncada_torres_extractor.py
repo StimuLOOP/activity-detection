@@ -11,7 +11,7 @@ def sliding_window(fn, measurements, s_positions, filter_func=[], w_size = 128):
     Slice timeseries into fixed size windows
     '''
     # Assemble dataset of the form (num_samples, num_measurements, w_size)
-    df = pd.read_csv(fn)
+    df = pd.read_csv(fn,on_bad_lines='skip').dropna()
     proc_data = {}
     for pos in s_positions:
         proc_data[pos] = {}
@@ -24,13 +24,16 @@ def sliding_window(fn, measurements, s_positions, filter_func=[], w_size = 128):
             else:
                 cols = [f'{pos}__{measurement}_x',f'{pos}__{measurement}_y',f'{pos}__{measurement}_z']
                 data = df[cols].to_numpy().T
+                
+            # Apply filter operation to data
+            data = filter_func[i](data)
 
             # Split array into fixed size windows
             num_windows = data.shape[1]//w_size
             pruned_data = data[:, :w_size*num_windows]
             split_data = np.array(np.split(pruned_data,num_windows, axis=1))
 
-            proc_data[pos][measurement] = meas = filter_func[i](split_data)
+            proc_data[pos][measurement] = split_data
     return proc_data
 
 def moncada_torres_active_filter(sig):
@@ -174,7 +177,7 @@ def extract_activity_features(data):
     feat.append(spectral_energy)
 
     # Compute spectral kurtosis
-    feat.append(kurtosis(np.abs(freq_data), axis=-1)-3)
+    feat.append(np.abs(kurtosis(freq_data, axis=-1))-3)
 
     return np.concatenate(feat,axis=-1)
 
