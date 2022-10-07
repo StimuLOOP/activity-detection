@@ -47,7 +47,7 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
     else:
         setup = 'not_affected_wrist'
     model_fn = os.path.join('models', task, f'{setup}.joblib')
-    predictions[f'{task}_predictions'] = make_predictions(model_fn, data, task)
+    predictions[f'{task}_{"non" if not affected else ""}affected_predictions'] = make_predictions(model_fn, data, task)
 
     if not append:
         # Get output location
@@ -62,7 +62,14 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
         df.to_csv(os.path.join(out_loc, out_fn),index_label='frame_number')
     else:
         # Save predictions
-        df = pd.read_csv(fn)
+        try:
+            df = pd.read_csv(fn)
+        except pd.errors.ParserError as e:
+            log(f"{fn} contains bad lines, those lines will be skipped and deleted.")
+            df = pd.read_csv(fn,on_bad_lines='skip')
+        if df.isnull().values.any():
+            log(f"{fn} contains invalid values on lines {np.argwhere(df.isnull().values)[:,0]}.")
+        df = df.dropna()
         df = pd.concat((df, pd.DataFrame.from_dict(predictions)),axis=1)
         df.to_csv(fn, index=False)
     print(f"Finished computing gait detections for {fn}.")
