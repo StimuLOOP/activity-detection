@@ -2,6 +2,7 @@ from get_activity_predictions import main as activity_predictions
 from get_gait_predictions import main as gait_predictions
 from get_functional_predictions import main as functional_predictions
 from utils.utils import *
+from utils.data import get_data
 import os, sys, datetime
 
 if __name__ == '__main__':
@@ -21,6 +22,10 @@ if __name__ == '__main__':
                     setup='right'
                 else:
                     setup='left'
+                    
+            # Get data 
+            data = get_data(file_path, setup, patient_standardization=True)
+            
             # Compute activity
             log(f"Starting predictions for {file_path}")
             activity_predictions(
@@ -29,6 +34,7 @@ if __name__ == '__main__':
                 out_loc=None, 
                 affected=affected,
                 no_inperson_standardization=True,
+                data=data,
                 append=True
             )
             log(f"Finished activity predictions for {file_path}")
@@ -39,6 +45,7 @@ if __name__ == '__main__':
                 out_loc=None, 
                 affected=affected, 
                 no_inperson_standardization=True,
+                data=data,
                 append=True
             )
             log(f"Finished gait predictions for {file_path}")

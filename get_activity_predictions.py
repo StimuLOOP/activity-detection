@@ -38,9 +38,10 @@ def make_predictions(model_fn, data, task):
     curr_preds = np.array([PRED_TO_STRING[task][label] for label in curr_preds]).repeat(128)
     return curr_preds
 
-def main(fn, s_setup, out_loc, affected=False, no_inperson_standardization=False, append=False):
+def main(fn, s_setup, out_loc, affected=False, no_inperson_standardization=False, data=None, append=False):
     # Get data from file
-    data = get_data(fn, s_setup, patient_standardization=not no_inperson_standardization)
+    if data is None:
+        data = get_data(fn, s_setup, patient_standardization=not no_inperson_standardization)
 
     # Get predictions
     task = 'activity'
