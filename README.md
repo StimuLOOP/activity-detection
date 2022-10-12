@@ -32,6 +32,13 @@ Sensor data should be collected with 50 samples per second and each row should c
 Examples of how to format the data are given in ```examples/data.csv``` and ```examples/data_wrists.csv``` with only a subset of sensor locations.
 Example code to export data collected by the Zurich Move sensor in matlab to csv can be found in ```MatlabToCSV.ipynb```.
 
+## Disclaimer on generalizability
+Note that the generalizability reported in the paper only holds if data is collected under the training protocol reported in the paper.
+Hence, timeseries should be at most a couple of hours long, people should be from a population of stroke patients, and patients should perform lying, sitting, standing, walking and stair ascend/descend over the course of the sample.
+More robust and generalizable models can be accessed by adding the ```-n``` flag to the python script.
+We observed a slight performance decrease of about 5-10\% in balanced accuracy when validating it on the dataset of the paper.
+Despite this drawback, in experiments on external data we found these models to generalize better and produce more reasonable results. 
+Please use at own discretion.
 
 ## Gait and Activity predictions
 This repository provides scripts to apply the SVM model for various sensor setups as explained in "_Accuracy of physical activity and posture classification using movement sensors in individuals with mobility impairment after stroke_".
