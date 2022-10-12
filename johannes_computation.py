@@ -23,21 +23,49 @@ if __name__ == '__main__':
                     setup='left'
             # Compute activity
             log(f"Starting predictions for {file_path}")
-            activity_predictions(file_path, setup, out_loc=None, affected=affected, append=True)
+            activity_predictions(
+                file_path, 
+                setup, 
+                out_loc=None, 
+                affected=affected,
+                no_inperson_standardization=True,
+                append=True
+            )
             log(f"Finished activity predictions for {file_path}")
             # Compute gait
-            gait_predictions(file_path, setup, out_loc=None, affected=affected, append=True)
+            gait_predictions(
+                file_path, 
+                setup, 
+                out_loc=None, 
+                affected=affected, 
+                no_inperson_standardization=True,
+                append=True
+            )
             log(f"Finished gait predictions for {file_path}")
 
             # Compute functional
             try:
                 sensor = 'wrist_r' if aff_side == 'right' else 'wrist_l'
-                functional_predictions(file_path, sensor, out_loc=None, affected=True, append=True)
+                functional_predictions(
+                    file_path, 
+                    sensor, 
+                    out_loc=None, 
+                    affected=True,
+                    no_inperson_standardization=True,
+                    append=True
+                )
             except KeyError as e:
                 log(f'Cannot compute functional prediction for affected side, {sensor} not in {fn}')
             try:
                 sensor = 'wrist_l' if aff_side == 'right' else 'wrist_r'
-                functional_predictions(file_path, sensor, out_loc=None, affected=False, append=True)
+                functional_predictions(
+                    file_path, 
+                    sensor, 
+                    out_loc=None, 
+                    affected=False,
+                    no_inperson_standardization=True,
+                    append=True
+                )
             except KeyError as e:
                 log(f'Cannot compute functional prediction for nonaffected side, {sensor} not in {fn}')
             log(f"Finished functional predictions for {file_path}")
