@@ -251,7 +251,7 @@ def extract_press_features(data):
     return np.concatenate(feat,axis=-1)
 
 
-def moncada_torres_patient_dataset(fn, s_positions, w_size=128):
+def moncada_torres_patient_dataset(fn, s_positions, patient_standardization=True, w_size=128):
     '''
     Get data, sequence timeseries into windows and extract features from measurements
     '''
@@ -293,6 +293,7 @@ def moncada_torres_patient_dataset(fn, s_positions, w_size=128):
     feat = np.concatenate([acc_posture, acc_activity, gyro, press],axis=-1)
 
     # Normalize each feature of this patient
-    feat = StandardScaler().fit_transform(feat)
+    if patient_standardization:
+        feat = StandardScaler().fit_transform(feat)
 
     return feat
