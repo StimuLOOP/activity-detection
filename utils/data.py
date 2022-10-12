@@ -4,6 +4,7 @@ from utils.moncada_torres_extractor import *
 def get_data(
     fn,
     sensors='all',
+    patient_standardization=True,
     w_size=128
     ):
     # Assemble sensor positions
@@ -28,6 +29,7 @@ def get_data(
     data = moncada_torres_patient_dataset(
             fn,
             s_positions,
+            patient_standardization=patient_standardization,
             w_size=w_size
         )
     return data

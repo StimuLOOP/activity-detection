@@ -20,6 +20,9 @@ def get_parser():
 
     # Affected flag
     parser.add_argument('-a', '--affected', action='store_true', help='Set this flag if side is affected. Can only be used in conjunction with "left"/"right" sensor setups.')
+    
+    # In person normalization flag
+    parser.add_argument('-n', '--no_inperson_standardization', action='store_true', help='Set this flag if inperson normalization should be shut off. This is recommended for scenarios where the data collection protocol deviated significantly from the paper. (E.g. longer timeseries, healthy patients, patients with non diverse activities like e.g. only lying)')
 
     # Output location
     parser.add_argument('-o', '--output_location', type=str, help='Specify output location.')
@@ -35,24 +38,23 @@ def make_predictions(model_fn, data, task):
     curr_preds = np.array([PRED_TO_STRING[task][label] for label in curr_preds]).repeat(128)
     return curr_preds
 
-def main(fn, s_setup, out_loc, affected=False, append=False):
+def main(fn, s_setup, out_loc, affected=False, no_inperson_standardization=False, append=False):
     # Get data from file
-    data = get_data(fn, s_setup)
+    data = get_data(fn, s_setup, patient_standardization=not no_inperson_standardization)
 
     # Get predictions
     task = 'activity'
     predictions = {}
     if s_setup not in ['right', 'left']:
-        model_fn = os.path.join('models', task, f'{s_setup}.joblib')
-        predictions[f'{task}_prediction'] = make_predictions(model_fn, data, task)
+        model_fn = os.path.join('models', task, f'{s_setup}{"_no_in_person_standardized" if no_inperson_standardization else ""}.joblib')
     else:
         # For unilateral setup, use not_affected by default and affected if configured by user
         if affected:
             setup = 'affected'
         else:
             setup = 'not_affected'
-        model_fn = os.path.join('models', task, f'{setup}.joblib')
-        predictions[f'{task}_prediction__{setup}'] = make_predictions(model_fn, data, task)
+        model_fn = os.path.join('models', task, f'{setup}{"_no_in_person_standardized" if no_inperson_standardization else ""}.joblib')
+    predictions[f'{task}_prediction'] = make_predictions(model_fn, data, task)
 
     if not append:
         # Get output location
@@ -89,4 +91,4 @@ if __name__ == '__main__':
         raise ValueError('Affected side can only be set for sensor locations "right" and "left"!')
 
     #Get predictions
-    main(args.file_path, args.sensors, args.output_location, affected=args.affected, append=args.append)
+    main(args.file_path, args.sensors, args.output_location, affected=args.affected, no_inperson_standardization=args.no_inperson_standardization, append=args.append)

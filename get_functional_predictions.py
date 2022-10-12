@@ -20,6 +20,9 @@ def get_parser():
 
     # Affected flag
     parser.add_argument('-a', '--affected', action='store_true', help='Set this flag if wrist is affected')
+    
+    # In person normalization flag
+    parser.add_argument('-n', '--no_inperson_standardization', action='store_true', help='Set this flag if inperson normalization should be shut off. This is recommended for scenarios where the data collection protocol deviated significantly from the paper. (E.g. longer timeseries, healthy patients, patients with non diverse activities like e.g. only lying)')
 
     # Output location
     parser.add_argument('-o', '--output_location', type=str, help='Specify output location.')
@@ -35,9 +38,9 @@ def make_predictions(model_fn, data, task):
     curr_preds = np.array([PRED_TO_STRING[task][label] for label in curr_preds]).repeat(100)
     return curr_preds
 
-def main(fn, s_setup, out_loc, affected=False, append=False):
+def main(fn, s_setup, out_loc, affected=False, no_inperson_standardization=False, append=False):
     # Get data from file
-    data = get_data(fn, s_setup, w_size=100)
+    data = get_data(fn, s_setup, w_size=100, patient_standardization=not no_inperson_standardization)
 
     # Get predictions
     predictions = {}
@@ -46,7 +49,7 @@ def main(fn, s_setup, out_loc, affected=False, append=False):
         setup = 'affected_wrist'
     else:
         setup = 'not_affected_wrist'
-    model_fn = os.path.join('models', task, f'{setup}.joblib')
+    model_fn = os.path.join('models', task, f'{setup}{"_no_in_person_standardized" if no_inperson_standardization else ""}.joblib')
     predictions[f'{task}_{"non" if not affected else ""}affected_predictions'] = make_predictions(model_fn, data, task)
 
     if not append:
@@ -80,4 +83,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     #Get predictions
-    main(args.file_path, args.sensors, args.output_location, affected=args.affected, append=args.append)
+    main(args.file_path, args.sensors, args.output_location, affected=args.affected, no_inperson_standardization=args.no_inperson_standardization, append=args.append)
