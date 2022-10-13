@@ -24,7 +24,7 @@ if __name__ == '__main__':
                     setup='left'
                     
             # Get data 
-            data = get_data(file_path, setup, patient_standardization=True)
+            data = get_data(file_path, setup, patient_standardization=False)
             
             # Compute activity
             log(f"Starting predictions for {file_path}")
