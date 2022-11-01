@@ -5,13 +5,13 @@ from scipy import ndimage
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
 import numpy as np
+from utils.utils import *
 
 def sliding_window(fn, measurements, s_positions, filter_func=[], w_size = 128):
     '''
     Slice timeseries into fixed size windows
     '''
-    # Assemble dataset of the form (num_samples, num_measurements, w_size)
-    df = pd.read_csv(fn,on_bad_lines='skip').dropna()
+    df = load_csv(fn)
     proc_data = {}
     for pos in s_positions:
         proc_data[pos] = {}
@@ -153,8 +153,11 @@ def extract_activity_features(data):
         denom_y = np.sqrt((norm_y**2).sum(axis=-1,keepdims=True))
         denom_z = np.sqrt((norm_z**2).sum(axis=-1,keepdims=True))
         xy = (norm_x*norm_y).sum(axis=-1,keepdims=True)/(denom_x*denom_y)
+        xy[denom_x*denom_y <= 1e-6] = np.inf
         xz = (norm_x*norm_z).sum(axis=-1,keepdims=True)/(denom_x*denom_z)
+        xz[denom_x*denom_y <= 1e-6] = np.inf
         yz = (norm_z*norm_y).sum(axis=-1,keepdims=True)/(denom_z*denom_y)
+        yz[denom_x*denom_y <= 1e-6] = np.inf
         feat += [xy, xz, yz]
 
     # Frequency domain features
@@ -168,8 +171,8 @@ def extract_activity_features(data):
 
     # Compute spectral entropy
     power_spectrum = np.abs(freq_data)**2
-    power_spectrum_dist = power_spectrum/power_spectrum.sum(axis=-1, keepdims=True)
-    spectral_entropy = -(power_spectrum_dist*np.log(power_spectrum_dist)).sum(axis=-1)
+    power_spectrum_dist = power_spectrum/(power_spectrum.sum(axis=-1, keepdims=True)+1e-10)
+    spectral_entropy = -(power_spectrum_dist*np.log(power_spectrum_dist+1e-10)).sum(axis=-1)
     feat.append(spectral_entropy)
 
     # Compute spectral energy
@@ -213,8 +216,8 @@ def extract_gyro_features(data):
 
     # Compute spectral entropy
     power_spectrum = np.abs(freq_data)**2
-    power_spectrum_dist = power_spectrum/power_spectrum.sum(axis=-1, keepdims=True)
-    spectral_entropy = -(power_spectrum_dist*np.log(power_spectrum_dist)).sum(axis=-1)
+    power_spectrum_dist = power_spectrum/(power_spectrum.sum(axis=-1, keepdims=True)+1e-10)
+    spectral_entropy = -(power_spectrum_dist*np.log(power_spectrum_dist+1e-10)).sum(axis=-1)
     feat.append(spectral_entropy)
 
     # Compute spectral energy
@@ -294,6 +297,7 @@ def moncada_torres_patient_dataset(fn, s_positions, patient_standardization=True
 
     # Normalize each feature of this patient
     if patient_standardization:
+        feat[feat==np.inf] = 0.
         feat = StandardScaler().fit_transform(feat)
 
     return feat

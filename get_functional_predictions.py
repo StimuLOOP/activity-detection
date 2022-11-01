@@ -32,11 +32,7 @@ def get_parser():
 
     return parser
 
-def make_predictions(model_fn, data, task):
-    model = load(model_fn)
-    curr_preds = model.predict(data)
-    curr_preds = np.array([PRED_TO_STRING[task][label] for label in curr_preds]).repeat(100)
-    return curr_preds
+
 
 def main(fn, s_setup, out_loc, affected=False, no_inperson_standardization=False, data=None, append=False):
     # Get data from file
@@ -51,7 +47,7 @@ def main(fn, s_setup, out_loc, affected=False, no_inperson_standardization=False
     else:
         setup = 'not_affected_wrist'
     model_fn = os.path.join('models', task, f'{setup}{"_no_in_person_standardized" if no_inperson_standardization else ""}.joblib')
-    predictions[f'{task}_{"non" if not affected else ""}affected_predictions'] = make_predictions(model_fn, data, task)
+    predictions[f'{task}_{"non" if not affected else ""}affected_predictions'] = make_predictions(model_fn, data, task, w_size=100)
 
     if not append:
         # Get output location
@@ -66,14 +62,7 @@ def main(fn, s_setup, out_loc, affected=False, no_inperson_standardization=False
         df.to_csv(os.path.join(out_loc, out_fn),index_label='frame_number')
     else:
         # Save predictions
-        try:
-            df = pd.read_csv(fn)
-        except pd.errors.ParserError as e:
-            log(f"{fn} contains bad lines, those lines will be skipped and deleted.")
-            df = pd.read_csv(fn,on_bad_lines='skip')
-        if df.isnull().values.any():
-            log(f"{fn} contains invalid values on lines {np.argwhere(df.isnull().values)[:,0]}.")
-        df = df.dropna()
+        df = load_csv(fn)
         df = pd.concat((df, pd.DataFrame.from_dict(predictions)),axis=1)
         df.to_csv(fn, index=False)
     print(f"Finished computing gait detections for {fn}.")
