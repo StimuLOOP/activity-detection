@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from utils.activity_counts import *
+from utils.utils import *
 from argparse import ArgumentParser
 import numpy as np
 from pathlib import Path
@@ -34,13 +35,13 @@ def main(path_to_files):
                 t_id = f'T{t_id+1}'
 
                 # Iterate across setups
-                for setup in ["wrists","all", "no_chest"]:
+                for setup in ["wrists","all_sensors", "no_chest", "nonaffected", "affected"]:
                     for aff_side, nonaff_side in [['left', 'right'],['right', 'left']]:
-                        fn = f"{p_id}_{m_id}_{t_id}_{setup}_sensors_{aff_side}_aff"
+                        fn = f"{p_id}_{m_id}_{t_id}_{setup}_{aff_side}_aff"
                         fn = os.path.join(path_to_files, fn)
                         if not os.path.exists(f"{fn}.csv"):
                             continue
-                        df = pd.read_csv(f"{fn}.csv")
+                        df = load_csv(f"{fn}.csv")
                         # Skip if shorter than 22 hours
                         if len(df) <= 22*60*60*50:
                             continue

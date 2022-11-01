@@ -60,8 +60,8 @@ def main(path_to_files, return_dfs=False):
                 m_id = f'm{m_id+1}'
 
                 # Iterate across setups
-                for setup in ["wrists","all", "no_chest"]:
-                    fn = f"{p_id}_{m_id}_{t_id}_{setup}_sensors"
+                for setup in ["wrists","all_sensors", "no_chest", "affected", "nonaffected"]:
+                    fn = f"{p_id}_{m_id}_{t_id}_{setup}"
                     fn = os.path.join(path_to_files, fn)
                     
                     # Compute affected side
@@ -75,9 +75,8 @@ def main(path_to_files, return_dfs=False):
                     else:
                         final_dfs[t_id]['Pat_id'].append(p_id)
                         final_dfs[t_id]['measurements'].append(m_id)
-                        final_dfs[t_id]['setup'].append(setup)
                         for col_name in COL_HEADERS:
-                            if col_name not in ['Pat_id','measurements','setup']:
+                            if col_name not in ['Pat_id','measurements']:
                                 final_dfs[t_id][col_name].append(pd.NA)
                         continue
                     
